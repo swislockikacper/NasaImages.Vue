@@ -33,4 +33,8 @@ div {
   background-repeat: no-repeat;
   background-position: 50%;
 }
+
+div:hover {
+  cursor: pointer;
+}
 </style>

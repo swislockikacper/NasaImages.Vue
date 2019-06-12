@@ -39,7 +39,8 @@ input {
 
   &.dark {
     margin-top: 2.5rem;
-    background: #444;
+    background: #555;
+    border: none;
   }
 }
 </style>
