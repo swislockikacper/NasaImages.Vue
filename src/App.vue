@@ -1,28 +1,60 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <Description v-if="status === 0"/>
+    <SearchInput v-model="searchValue" @input="searchData" :value="searchValue" :status="status"/>
+
+    <div v-if="results && status === 1" class="objects">
+      <Object v-for="result in results" :key="result.data[0].nasa_id" :result="result"/>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue';
+import Description from "./components/Description.vue";
+import SearchInput from "./components/SearchInput.vue";
+import Object from "./components/Object.vue";
+import axios from "axios";
+import debounce from "lodash.debounce";
+
+const API = "https://images-api.nasa.gov/search";
 
 export default {
-  name: 'app',
+  name: "app",
   components: {
-    HelloWorld,
+    Description,
+    SearchInput,
+    Object
   },
+  data() {
+    return {
+      searchValue: "",
+      results: [],
+      status: 0
+    };
+  },
+  methods: {
+    searchData: debounce(function() {
+      axios
+        .get(`${API}?q=${this.searchValue}&media_type=image`)
+        .then(response => {
+          this.results = response.data.collection.items;
+          this.status = 1;
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }, 500)
+  }
 };
 </script>
 
-<style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style lang="scss" scoped>
+.objects {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2.5rem;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-gap: 1rem;
 }
 </style>
